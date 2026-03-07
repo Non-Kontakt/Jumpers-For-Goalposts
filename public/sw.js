@@ -1,26 +1,29 @@
 // Service worker — full offline PWA support
-const CACHE_NAME = "jfg-v3";
+const CACHE_NAME = "jfg-v4";
+
+// Detect base path from service worker scope
+const BASE = new URL("./", self.registration.scope).pathname;
 
 // MP3 tracks to precache (fetched after critical assets)
 const AUDIO_URLS = [
-  "/Home.mp3",
-  "/Training.mp3",
-  "/Gone_Up_One.mp3",
-  "/Chairmans_Office.mp3",
-  "/Takeover_Bid.mp3",
-  "/Shootout.mp3",
-  "/Forgot_Kit.mp3",
-  "/Ice_Bath.mp3",
-  "/Clubman_Cup.mp3",
+  "Home.mp3",
+  "Training.mp3",
+  "Gone_Up_One.mp3",
+  "Chairmans_Office.mp3",
+  "Takeover_Bid.mp3",
+  "Shootout.mp3",
+  "Forgot_Kit.mp3",
+  "Ice_Bath.mp3",
+  "Clubman_Cup.mp3",
 ];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       // Critical: index.html must be cached for offline navigation
-      await cache.addAll(["/"]);
+      await cache.addAll([BASE]);
       // Audio: cache each individually so one failure doesn't block install
-      await Promise.allSettled(AUDIO_URLS.map((url) => cache.add(url)));
+      await Promise.allSettled(AUDIO_URLS.map((url) => cache.add(BASE + url)));
     })
   );
   self.skipWaiting();
@@ -56,7 +59,7 @@ self.addEventListener("fetch", (e) => {
         .catch(() => {
           // Network failed and cache missed — for navigation, serve cached index
           if (e.request.mode === "navigate") {
-            return caches.match("/");
+            return caches.match(BASE);
           }
           // For other resources, return a basic offline response
           return new Response("", { status: 503, statusText: "Offline" });
