@@ -541,6 +541,24 @@ function FootballManager() {
 
   const [pendingPlayerUnlock, setPendingPlayerUnlock] = useState(null);
   const [showAssignAll, setShowAssignAll] = useState(false);
+  const assignAllRef = useRef(null);
+  useEffect(() => {
+    if (!showAssignAll) return;
+    const handleClick = (e) => {
+      if (assignAllRef.current && !assignAllRef.current.contains(e.target)) {
+        setShowAssignAll(false);
+      }
+    };
+    const handleKey = (e) => {
+      if (e.key === "Escape") setShowAssignAll(false);
+    };
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [showAssignAll]);
   const [squadView, setSquadView] = useState("attrs"); // "attrs" or "stats"
   const [formation, setFormation] = useState(() => DEFAULT_FORMATION.map(s => ({...s})));
   const [slotAssignments, setSlotAssignments] = useState(null); // Array(11) of playerIds or null — manual slot→player mapping
@@ -6389,7 +6407,7 @@ function FootballManager() {
                     color: squadView === "stats" ? C.blue : C.textMuted,
                     fontFamily: FONT,
                   }}>{squadView === "attrs" ? "📊 STATS" : "📋 ATTRS"}</button>
-                  <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                  <div ref={assignAllRef} style={{ position: "relative", display: "flex", alignItems: "center" }}>
                     <button onClick={(e) => {
                       e.stopPropagation();
                       setShowAssignAll(prev => !prev);
