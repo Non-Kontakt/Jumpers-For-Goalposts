@@ -1431,6 +1431,15 @@ function FootballManager() {
         { id: "msg_board", week: 1, season: 1, icon: "🏟️", title: "Board Expectations", body: `The board expects a solid mid-table finish this season in ${LEAGUE_DEFS[leagueTier]?.name || "Sunday League"}. Prove them wrong.`, color: C.textMuted, read: false },
         { id: "msg_trial_" + trialP.id, week: trialWeek, season: 1, icon: "🌍", title: `Trial Suggested: ${trialP.name}`, body: `Your scout reports: "${trialP.name}, a ${trialP.age}-year-old ${trialP.position} from ${trialP.countryLabel} ${trialP.flag}, is over here on holiday and is showing promise. He's available for a 3-week trial if you have space in your squad."`, color: C.green, read: false, type: "trial_offer", trialPlayerData: trialP, pendingUntilWeek: trialWeek, choices: [{ label: "Accept Trial", value: "accept" }, { label: "Decline", value: "decline" }] },
       ]);
+      // Asst Manager intro — training onboarding
+      setInboxMessages(prev => [...prev, {
+        id: "msg_asst_mgr_training_intro", week: 2, season: 1,
+        icon: "📋", color: "#f59e0b",
+        title: "Asst. Manager's Notes",
+        body: "Boss, now that we've got a match under our belt, I wanted to have a word about training.\n\nEach week, your players can be assigned a training focus — shooting, defending, pace, the lot. It's how they improve over time. Without it, they'll stay exactly where they are.\n\nYou can set it up on the Squad page, or if you'd rather focus on tactics and transfers, I'm happy to put everyone on a general programme for now. Your call.",
+        read: false, type: "asst_mgr_training_intro", pendingUntilWeek: 2,
+        choices: [{ label: "You Handle It", value: "delegate" }, { label: "I'll Set It Up", value: "manual" }],
+      }]);
       // League modifier intro message
       const startMod = getModifier(leagueTier);
       if (startMod.inboxIntro) {
@@ -1857,6 +1866,12 @@ function FootballManager() {
           const teams = prev.teams.map((t, i) => i === rivalIdx ? { ...t, strength: Math.min(1, t.strength + 0.03) } : t);
           return { ...prev, teams };
         });
+      }
+    }
+    if (msg.type === "asst_mgr_training_intro" || msg.type === "asst_mgr_training_nudge") {
+      if (choice === "delegate") {
+        setSquad(prev => prev.map(p => ({ ...p, training: p.training || "balanced" })));
+        setTrainedThisWeek(new Set(squadRef.current.map(p => p.id)));
       }
     }
   }, [week, leagueTier, seasonNumber, unlockedAchievements]); // eslint-disable-line
@@ -7116,6 +7131,28 @@ function FootballManager() {
               }
             } catch(err) {
               console.error("Lopsided training check error:", err);
+            }
+
+            // === ASSISTANT MANAGER: TRAINING NUDGE (Matchday 5, no training assigned) ===
+            try {
+              const mwPlayed = matchweekIndexRef.current;
+              const noTrainingAssigned = (appliedSquad || squad).every(p => !p.training);
+              const alreadySent = inboxMessages.some(m => m.id === "msg_asst_mgr_training_nudge");
+              const introDeclined = inboxMessages.some(m => m.id === "msg_asst_mgr_training_intro" && m.choiceResult === "manual");
+              if (mwPlayed >= 5 && noTrainingAssigned && !alreadySent && seasonNumber === 1) {
+                setInboxMessages(prev => [...prev, {
+                  id: "msg_asst_mgr_training_nudge", week: week, season: seasonNumber,
+                  icon: "📋", color: "#f59e0b",
+                  title: "Asst. Manager's Notes",
+                  body: introDeclined
+                    ? "Boss, I know you said you'd handle training yourself, but we're 5 games in and none of the lads have a programme.\n\nAt this rate they won't improve at all this season. Want me to step in and put everyone on a general regime? You can always fine-tune it later."
+                    : "Boss, we're 5 matchdays in and the lads still aren't training.\n\nThey're not going to get any better on their own. Say the word and I'll put everyone on a general programme — you can always change it later on the Squad page.",
+                  read: false, type: "asst_mgr_training_nudge",
+                  choices: [{ label: "Go On Then", value: "delegate" }, { label: "Leave It", value: "dismiss" }],
+                }]);
+              }
+            } catch(err) {
+              console.error("Training nudge check error:", err);
             }
 
             // Apply deferred trial player actions
