@@ -246,7 +246,7 @@ function FootballManager() {
   const [tradesMadeInWindow, setTradesMadeInWindow] = useState(0); // trades in current transfer window
   const [tradedWithClubs, setTradedWithClubs] = useState(new Set()); // clubs traded with (for Old Boys Network)
   const [startingXI, setStartingXI] = useState([]);
-  const [showLineupWarning, setShowLineupWarning] = useState(false);
+  const [showLineupWarning, setShowLineupWarning] = useState(null); // null | "advance" | "match"
   const [bench, setBench] = useState([]);
   const [dragPlayer, setDragPlayer] = useState(null);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth <= 768);
@@ -4281,7 +4281,7 @@ function FootballManager() {
                   onClick={() => {
                     // Starting XI warning: block if no lineup assigned
                     if (!startingXI || startingXI.length === 0) {
-                      setShowLineupWarning(true);
+                      setShowLineupWarning("match");
                       return;
                     }
                     // Altitude Trials: enforce minimum ATK players
@@ -4423,7 +4423,7 @@ function FootballManager() {
                     const nextEntry = seasonCalendar?.[calendarIndex + 1];
                     const nextIsMatch = nextEntry && ["league", "cup", "dynasty", "mini"].includes(nextEntry.type);
                     if (nextIsMatch && (!startingXI || startingXI.length === 0)) {
-                      setShowLineupWarning(true);
+                      setShowLineupWarning("advance");
                       return;
                     }
                     advanceWeek();
@@ -6844,17 +6844,28 @@ function FootballManager() {
         ultimatumTarget={ultimatumTarget}
         ultimatumGamesLeft={ultimatumGamesLeft}
         gameMode={gameMode}
-        showLineupWarning={showLineupWarning}
-        onDismissLineupWarning={() => setShowLineupWarning(false)}
+        showLineupWarning={!!showLineupWarning}
+        onDismissLineupWarning={() => setShowLineupWarning(null)}
         onLineupWarningGoToSquad={() => {
-          setShowLineupWarning(false);
+          setShowLineupWarning(null);
           setShowAchievements(false); setShowTable(false); setShowCalendar(false);
           setShowCup(false); setShowTransfers(false); setShowLegends(false);
           setShowSquad(true);
         }}
         onLineupWarningPlayAnyway={() => {
-          setShowLineupWarning(false);
-          advanceWeek();
+          const origin = showLineupWarning;
+          setShowLineupWarning(null);
+          if (origin === "match") {
+            if (playMatchBtnRef.current) {
+              playMatchBtnRef.current.click();
+            } else {
+              setShowAchievements(false); setShowTable(false); setShowCalendar(false);
+              setShowCup(false); setShowTransfers(false); setShowLegends(false); setShowSquad(false);
+              setTimeout(() => playMatchBtnRef.current?.click(), 0);
+            }
+          } else {
+            advanceWeek();
+          }
         }}
       />
       )}
