@@ -65,10 +65,12 @@ Never swallow errors silently in interval-driven code. At minimum `console.warn`
 
 ## Branch Naming
 
-Use descriptive branch names:
-- `feature/league-modifiers-phase2`
-- `fix/training-injury-display`
-- `ui/transfer-page-redesign`
+Prefix with type, include the issue number when one exists:
+- `fix/9-cup-name-mismatch`
+- `feat/8-training-onboarding`
+- `chore/16-pr-template`
+
+No issue? Use a short description: `fix/dropdown-dismiss`, `feat/league-modifiers-phase2`
 
 ## PR Description
 
@@ -77,6 +79,7 @@ Every PR must include:
 2. Which files were modified
 3. How to test it (what to look for in-game)
 4. Build confirmation (`npx --no vite build --mode development` output)
+5. Labels: `bug`, `ux`, `feature`, or `chore` — apply to both the PR and any linked issues
 
 ## What NOT to Do
 
