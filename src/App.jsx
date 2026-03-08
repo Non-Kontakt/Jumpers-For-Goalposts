@@ -3201,11 +3201,7 @@ function FootballManager() {
         setTickets(prev => [...prev, { id: `t_arc_${Date.now()}_${Math.random().toString(36).slice(2,6)}`, type: pick }]);
       });
     }
-    const gainsPayload = { improvements: weekGains, injuries: weekInjuries, duos: weekDuos, recoveries: weekRecoveries, progress: weekProgress, arcBoosts: arcBoostGains, ticketBoosts: resolvedTicketBoosts, cappedArcTickets: isOnHolidayRef.current ? [] : cappedArcTickets };
-    const hasAnyGains = weekGains.length > 0 || weekInjuries.length > 0 || weekDuos.length > 0 || weekRecoveries.length > 0 || weekProgress.length > 0 || arcBoostGains.length > 0 || resolvedTicketBoosts.length > 0 || cappedArcTickets.length > 0;
-    if (hasAnyGains) {
-      setGains(gainsPayload);
-    }
+    setGains({ improvements: weekGains, injuries: weekInjuries, duos: weekDuos, recoveries: weekRecoveries, progress: weekProgress, arcBoosts: arcBoostGains, ticketBoosts: resolvedTicketBoosts, cappedArcTickets: isOnHolidayRef.current ? [] : cappedArcTickets });
     setPendingTicketBoosts([]);
 
     // Sweat Equity — 4+ gains in a double training week
@@ -3523,9 +3519,7 @@ function FootballManager() {
             return { ...p, gains: freshGains };
           });
           setPendingSquad(newSquad);
-          if (arcBoostGains.length > 0) {
-            setGains({ improvements: [], injuries: [], duos: [], recoveries: [], progress: [], arcBoosts: arcBoostGains, ticketBoosts: [] });
-          }
+          setGains({ improvements: [], injuries: [], duos: [], recoveries: [], progress: [], arcBoosts: arcBoostGains, ticketBoosts: [] });
           setStoryArcs(prev => ({ ...prev, rewardsApplied: [...(prev.rewardsApplied || []), ...appliedIds] }));
         }
       }
@@ -3650,9 +3644,7 @@ function FootballManager() {
         return { ...p, attrs: { ...p.attrs, [attr]: newVal }, gains: { ...(p.gains || {}), [attr]: (p.gains?.[attr] || 0) + (newVal - oldVal) } };
       });
       setPendingSquad(newSquad);
-      if (arcBoosts.length > 0) {
-        setGains({ improvements: [], injuries: [], duos: [], recoveries: [], progress: [], arcBoosts, ticketBoosts: [] });
-      }
+      setGains({ improvements: [], injuries: [], duos: [], recoveries: [], progress: [], arcBoosts, ticketBoosts: [] });
       const names = chosen.map(p => p.name.split(" ").pop()).join(", ");
       const newLeagueName = league?.leagueName || LEAGUE_DEFS[leagueTier]?.name || "the new division";
       const tableSorted = sortStandings(league?.table || []);

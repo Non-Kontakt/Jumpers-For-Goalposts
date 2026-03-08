@@ -111,6 +111,7 @@ export function GainPopup({ gains, onDone, onPlayerClick, onAchievementCheck, on
     setTimeout(() => setVisible(true), 50);
     if (totalAll === 0) {
       setTimeout(() => SFX.noGains(), 400);
+      setTimeout(() => onDone(), 600);
     }
     // Quick mode: auto-reveal all mystery cards on mount (shows revealed cards, no tapping)
     if (isQuick && totalMystery > 0) {
