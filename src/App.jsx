@@ -1482,7 +1482,7 @@ function FootballManager() {
         id: "msg_reporter_intro", week: 2, season: 1,
         icon: "📰", color: "#94a3b8",
         title: `${rName}, ${pName}`,
-        body: `Boss,\n\n${rName} here — I cover your club for ${pName}. Thought I'd introduce myself now the season's underway.\n\nI've been doing this job long enough to know that the best clubs aren't just built on results. They're built on stories. The captain who drags the team through a crisis. The kid who comes from nowhere. The old pro who gets one last shot.\n\nYou'll find those threads developing in your Boot Room under Story Arcs. Keep an eye on them — the drama tends to write itself, and the payoff can be worth more than any training session.\n\nI'll be watching. Good luck.`,
+        body: `${profileList.find(p => p.id === activeProfileId)?.name || "Gaffer"},\n\n${rName} here — I cover your club for ${pName}. Thought I'd introduce myself now the season's underway.\n\nI've been doing this job long enough to know that the best clubs aren't just built on results. They're built on stories. The captain who drags the team through a crisis. The kid who comes from nowhere. The old pro who gets one last shot.\n\nYou'll find those threads developing in your Boot Room under Story Arcs. Keep an eye on them — the drama tends to write itself, and the payoff can be worth more than any training session.\n\nI'll be watching. Good luck.`,
         read: false, pendingUntilWeek: 2,
       }]);
       // Single-fixture opponents announcement (Dynasty / Mini-Tournament tiers)
