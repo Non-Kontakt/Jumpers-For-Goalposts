@@ -17,11 +17,13 @@ export function GainPopup({ gains, onDone, onPlayerClick, onAchievementCheck, on
   const mob = window.innerWidth <= 768;
   const isQuick = cardSpeed === "quick";
   const isSummary = cardSpeed === "summary";
+  const doneRef = useRef(false);
+  const safeDone = useCallback(() => { if (doneRef.current) return; doneRef.current = true; onDone(); }, [onDone]);
 
   // Auto-close training reports when on holiday
   useEffect(() => {
     if (isOnHoliday) {
-      const timer = setTimeout(() => onDone(), 600); // Auto-close after 600ms to ensure all state updates propagate
+      const timer = setTimeout(() => safeDone(), 600); // Auto-close after 600ms to ensure all state updates propagate
       return () => clearTimeout(timer);
     }
   }, [isOnHoliday, onDone]);
@@ -111,7 +113,7 @@ export function GainPopup({ gains, onDone, onPlayerClick, onAchievementCheck, on
     setTimeout(() => setVisible(true), 50);
     if (totalAll === 0) {
       setTimeout(() => SFX.noGains(), 400);
-      setTimeout(() => onDone(), 600);
+      setTimeout(() => safeDone(), 600);
     }
     // Quick mode: auto-reveal all mystery cards on mount (shows revealed cards, no tapping)
     if (isQuick && totalMystery > 0) {
@@ -134,7 +136,7 @@ export function GainPopup({ gains, onDone, onPlayerClick, onAchievementCheck, on
 
   const handleDismiss = () => {
     setVisible(false);
-    setTimeout(() => { try { onDone(); } catch(e) { console.error("GainPopup onDone error:", e); } }, 400);
+    setTimeout(() => { try { safeDone(); } catch(e) { console.error("GainPopup onDone error:", e); } }, 400);
   };
 
   const handleRevealAll = () => {
