@@ -2663,7 +2663,6 @@ function FootballManager() {
     if (isOnHolidayRef.current) {
       // Apply squad changes immediately, no popup
       setSquad(newSquad);
-      useGameStore.getState().squad = newSquad;
       setWeek(w => w + 1);
       setTrainedThisWeek(new Set());
       // Don't set gains (no popup to show them)
@@ -2722,7 +2721,6 @@ function FootballManager() {
         if (trialAction) {
           if (trialAction.type === "impressed") {
             setSquad(prev => prev.filter(p => p.id !== trialAction.id));
-            useGameStore.getState().squad = useGameStore.getState().squad.filter(p => p.id !== trialAction.id);
             setStartingXI(prev => prev.filter(id => id !== trialAction.id));
             setBench(prev => prev.filter(id => id !== trialAction.id));
             setTrialPlayer(null);
@@ -2746,7 +2744,6 @@ function FootballManager() {
               setAchievementQueue(prev => [...prev, "reality_check"]);
             }
             setSquad(prev => prev.filter(p => p.id !== trialAction.id));
-            useGameStore.getState().squad = useGameStore.getState().squad.filter(p => p.id !== trialAction.id);
             setStartingXI(prev => prev.filter(id => id !== trialAction.id));
             setBench(prev => prev.filter(id => id !== trialAction.id));
             setTrialPlayer(null);
@@ -2775,7 +2772,6 @@ function FootballManager() {
           } else if (trialAction.type === "continue") {
             setTrialPlayer(prev => prev ? { ...prev, trialWeeksLeft: trialAction.newWeeksLeft, trialStarts: trialAction.newStarts } : null);
             setSquad(prev => prev.map(p => p.id === trialAction.id ? { ...p, trialWeeksLeft: trialAction.newWeeksLeft, trialStarts: trialAction.newStarts } : p));
-            useGameStore.getState().squad = useGameStore.getState().squad.map(p => p.id === trialAction.id ? { ...p, trialWeeksLeft: trialAction.newWeeksLeft, trialStarts: trialAction.newStarts } : p);
           }
         }
       } catch(err) { console.error("Holiday trial processing error:", err); }
@@ -4604,7 +4600,7 @@ function FootballManager() {
 
             // Set target and enable holiday mode
             holidayTargetRef.current = targetMD;
-            holidayStartMatchuseGameStore.getState().week = matchweekIndexRef.current;
+            holidayStartMatchweekRef.current = matchweekIndexRef.current;
             holidayWeeksWithoutMatchRef.current = 0;
             setIsOnHoliday(true);
             setInstantMatch(true); // Auto-enable instant match for fast simulation
@@ -6960,7 +6956,6 @@ function FootballManager() {
                 return current ? { ...pp, training: current.training } : pp;
               });
               setSquad(appliedSquad);
-              useGameStore.getState().squad = appliedSquad; // Update ref immediately, don't wait for useEffect!
               setPendingSquad(null);
 
               // Trigger OVR celebration if any level-ups
@@ -10258,7 +10253,7 @@ function FootballManager() {
         <HolidayOverlay
           currentMatchweek={matchweekIndex}
           targetMatchweek={holidayTargetRef.current || 0}
-          startMatchweek={holidayStartMatchuseGameStore.getState().week || 0}
+          startMatchweek={holidayStartMatchweekRef.current || 0}
           onReturn={() => {
             // Stop holiday interval
             if (holidayIntervalRef.current) {
