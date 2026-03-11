@@ -98,6 +98,27 @@ const MATCH = {
   // Injured starter effectiveness (in getTeamStrength)
   INJURED_EFFECTIVENESS: 0.6,
 
+  // Trait commentary generation
+  PHYSICAL_CARD_CHANCE: 0.4,
+  PHYSICAL_COMMENTARY_MIN: 2,
+  PHYSICAL_COMMENTARY_MAX: 4,
+  DOMINANT_COMMENTARY_MIN: 3,
+  DOMINANT_COMMENTARY_MAX: 4,
+  SET_PIECE_COMMENTARY_MIN: 2,
+  SET_PIECE_COMMENTARY_MAX: 3,
+  FLAIR_COMMENTARY_MIN: 2,
+  FLAIR_COMMENTARY_MAX: 3,
+  FLAIR_CARD_CHANCE: 0.3,
+  METHODICAL_COMMENTARY_MIN: 1,
+  METHODICAL_COMMENTARY_MAX: 2,
+
+  // Comeback detection
+  COMEBACK_DEFICIT: 2,
+
+  // Default attribute fallbacks
+  DEFAULT_ATTR: 10,
+  ATTR_MAX: 20,
+
   // Flash colors for match events
   FLASH_PLAYER: "#4ade80",
   FLASH_OPP: "#ef4444",
@@ -357,7 +378,7 @@ export function simulateMatch(homeTeam, awayTeam, playerStartingXI, playerBench,
     const players = getPlayingSquad(team);
     const weights = players.map(p => {
       const type = POSITION_TYPES[p.position];
-      const shoot = (p.attrs?.shooting || 10) / 20;
+      const shoot = (p.attrs?.shooting || MATCH.DEFAULT_ATTR) / MATCH.ATTR_MAX;
       const posW = type === "FWD" ? MATCH.SCORER_FWD : type === "MID" ? MATCH.SCORER_MID : type === "DEF" ? MATCH.SCORER_DEF : MATCH.SCORER_GK;
       let w = shoot * posW;
       // Stars trait: massively boost the top scorer so braces/hat-tricks happen
@@ -394,7 +415,7 @@ export function simulateMatch(homeTeam, awayTeam, playerStartingXI, playerBench,
     const weights = players.map(p => {
       const type = POSITION_TYPES[p.position];
       if (type === "GK") return 0;
-      const passing = (p.attrs?.passing || 10) / 20;
+      const passing = (p.attrs?.passing || MATCH.DEFAULT_ATTR) / MATCH.ATTR_MAX;
       const posW = type === "MID" ? MATCH.ASSIST_MID : type === "FWD" ? MATCH.ASSIST_FWD : MATCH.ASSIST_DEF; // DEF = ASSIST_DEF
       return passing * posW;
     });
@@ -529,9 +550,9 @@ export function simulateMatch(homeTeam, awayTeam, playerStartingXI, playerBench,
     const t = team.trait;
     if (!t) return;
     if (t === "physical") {
-      for (let i = 0; i < rand(2, 4); i++) {
+      for (let i = 0; i < rand(MATCH.PHYSICAL_COMMENTARY_MIN, MATCH.PHYSICAL_COMMENTARY_MAX); i++) {
         const min = rand(1, 90);
-        if (Math.random() < 0.4 && !modifiers.noCards) {
+        if (Math.random() < MATCH.PHYSICAL_CARD_CHANCE && !modifiers.noCards) {
           const p = namedPlayer(team);
           events.push({ minute: min, type: "card", side, text: `🟨 Yellow card! ${p} goes into the book for a late challenge.`, flash: true, flashColor: MATCH.FLASH_CHANCE, cardPlayer: p, cardTeamName: team.name });
         } else {
@@ -541,12 +562,12 @@ export function simulateMatch(homeTeam, awayTeam, playerStartingXI, playerBench,
       }
     }
     if (t === "dominant") {
-      for (let i = 0; i < rand(3, 4); i++) {
+      for (let i = 0; i < rand(MATCH.DOMINANT_COMMENTARY_MIN, MATCH.DOMINANT_COMMENTARY_MAX); i++) {
         events.push({ minute: rand(1, 90), type: "possession", side, text: `${team.name} dominating possession, moving the ball with purpose.`, flash: false });
       }
     }
     if (t === "set_piece") {
-      for (let i = 0; i < rand(2, 3); i++) {
+      for (let i = 0; i < rand(MATCH.SET_PIECE_COMMENTARY_MIN, MATCH.SET_PIECE_COMMENTARY_MAX); i++) {
         events.push({ minute: rand(1, 90), type: "corner", side, text: `Dangerous corner from ${team.name}. The keeper punches clear!`, flash: false });
       }
       events.push({ minute: rand(20, 80), type: "chance", side, text: `${team.name} free kick curls toward the top corner — just over!`, flash: true, flashColor: MATCH.FLASH_CHANCE });
@@ -559,14 +580,14 @@ export function simulateMatch(homeTeam, awayTeam, playerStartingXI, playerBench,
       events.push({ minute: rand(75, 88), type: "possession", side, text: `${team.name} are throwing bodies forward! They never know when they're beaten!`, flash: false });
     }
     if (t === "methodical") {
-      for (let i = 0; i < rand(1, 2); i++) {
+      for (let i = 0; i < rand(MATCH.METHODICAL_COMMENTARY_MIN, MATCH.METHODICAL_COMMENTARY_MAX); i++) {
         events.push({ minute: rand(1, 90), type: "possession", side, text: `${team.name} passing it around patiently, probing for an opening.`, flash: false });
       }
     }
     if (t === "flair") {
-      for (let i = 0; i < rand(2, 3); i++) {
+      for (let i = 0; i < rand(MATCH.FLAIR_COMMENTARY_MIN, MATCH.FLAIR_COMMENTARY_MAX); i++) {
         const min = rand(1, 90);
-        if (Math.random() < 0.3 && !modifiers.noCards) {
+        if (Math.random() < MATCH.FLAIR_CARD_CHANCE && !modifiers.noCards) {
           const p = namedPlayer(team);
           events.push({ minute: min, type: "card", side, text: `🟨 Yellow card! ${p} is booked for simulation! The referee wasn't fooled.`, flash: true, flashColor: MATCH.FLASH_CHANCE, cardPlayer: p, cardTeamName: team.name });
         } else {
@@ -790,7 +811,7 @@ export function simulateMatch(homeTeam, awayTeam, playerStartingXI, playerBench,
     const calcRating = (p, isSubstitute) => {
       if (!p.attrs) return null;
       const overall = getOverall(p);
-      let base = MATCH.RATE_BASE + (overall / 20) * MATCH.RATE_OVR_SCALE;
+      let base = MATCH.RATE_BASE + (overall / MATCH.ATTR_MAX) * MATCH.RATE_OVR_SCALE;
       const noise = (Math.random() - 0.5) * MATCH.RATE_NOISE;
       if (!isSubstitute && p.injury) base -= MATCH.RATE_INJURY;
       const goals = playerGoalCounts[p.name] || 0;
@@ -857,7 +878,7 @@ export function simulateMatch(homeTeam, awayTeam, playerStartingXI, playerBench,
   }
   const playerFinalGoals = playerIsHome ? homeGoals : awayGoals;
   const oppFinalGoals = playerIsHome ? awayGoals : homeGoals;
-  const comeback = maxDeficit >= 2 && playerFinalGoals > oppFinalGoals;
+  const comeback = maxDeficit >= MATCH.COMEBACK_DEFICIT && playerFinalGoals > oppFinalGoals;
 
   // Shot counting per side (shot + chance events, keyed by side field set at creation)
   const homeShotsCount = events.filter(e => (e.type === "shot" || e.type === "chance") && e.side === "home").length;
