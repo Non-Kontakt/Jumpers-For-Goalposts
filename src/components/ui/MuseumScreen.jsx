@@ -1,10 +1,6 @@
-import { FONT } from "../../data/tokens";
+import { C as TC, FONT } from "../../data/tokens";
 
-const C = {
-  text: "#f1f5f9", textMuted: "#94a3b8", bg: "#06060f",
-  red: "#f87171", yellow: "#fbbf24", green: "#4ade80",
-  dim: "#334155", slate: "#475569",
-};
+const C = { ...TC, bg: "#06060f", dim: "#334155" };
 // Larger sizes — Press Start 2P needs room to breathe
 const F = {
   hero: "clamp(20px,5vw,28px)",
@@ -148,7 +144,7 @@ export function MuseumScreen({ career, onClose, closeLabel = "RETURN TO MENU" })
                   fontSize: F.body,
                 }}>
                   <span style={{ color: C.slate }}>S{c.season}</span>
-                  <span style={{ color: c.playerResult === "winner" ? C.yellow : C.textMuted }}>
+                  <span style={{ color: c.playerResult === "winner" ? C.amber : C.textMuted }}>
                     {result}
                   </span>
                 </div>
@@ -167,7 +163,7 @@ export function MuseumScreen({ career, onClose, closeLabel = "RETURN TO MENU" })
                 fontSize: F.body,
               }}>
                 <span style={{ color: C.textMuted, flex: 1, marginRight: 16 }}>{p.name}</span>
-                <span style={{ color: C.yellow, marginRight: 20 }}>{p.goals}g</span>
+                <span style={{ color: C.amber, marginRight: 20 }}>{p.goals}g</span>
                 <span style={{ color: C.slate }}>{p.apps} apps</span>
               </div>
             ))}
