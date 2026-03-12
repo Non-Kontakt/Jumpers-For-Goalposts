@@ -408,18 +408,34 @@ export function BootRoom({ settings, save, debug, inbox, calendar, calendarIndex
                 }}>{saveStatus === "saving" ? "SAVING..." : saveStatus === "saved" ? "SAVED ✓" : "💾 SAVE"}</button>
                 )}
                 {gameMode !== "ironman" && (<>
+                {(() => {
+                  const EXPORT_STATUS = {
+                    exporting:      { label: "EXPORTING...", bg: "rgba(96,165,250,0.1)", border: C.blue, color: C.blue },
+                    exported:       { label: "EXPORTED ✓",  bg: "rgba(74,222,128,0.15)", border: C.green, color: C.green },
+                    "export-error": { label: "EXPORT FAILED", bg: "rgba(239,68,68,0.1)", border: C.red, color: C.red },
+                    "no-save":      { label: "NO SAVE",     bg: "rgba(239,68,68,0.1)", border: C.red, color: C.red },
+                  };
+                  const IMPORT_STATUS = {
+                    importing: { label: "IMPORTING...", bg: "rgba(96,165,250,0.1)", border: C.blue, color: C.blue },
+                    imported: { label: "IMPORTED ✓",  bg: "rgba(74,222,128,0.15)", border: C.green, color: C.green },
+                    invalid:  { label: "INVALID FILE", bg: "rgba(239,68,68,0.1)", border: C.red, color: C.red },
+                  };
+                  const DEFAULT_STYLE = { bg: "rgba(30,41,59,0.3)", border: C.bgInput, color: C.textMuted };
+                  const exp = EXPORT_STATUS[importStatus] || DEFAULT_STYLE;
+                  const imp = IMPORT_STATUS[importStatus] || DEFAULT_STYLE;
+                  return (<>
                 <button onClick={exportSave} style={{
                   flex: 1, minWidth: mob ? 100 : 120, padding: "12px 14px", cursor: "pointer",
                   fontFamily: FONT, fontSize: mob ? F.xs : F.sm,
-                  background: "rgba(30,41,59,0.3)", border: `1px solid ${C.bgInput}`, color: C.textMuted,
-                }}>📤 EXPORT</button>
+                  background: exp.bg, border: `1px solid ${exp.border}`, color: exp.color,
+                }}>{exp.label || "📤 EXPORT"}</button>
                 <button onClick={importSave} style={{
                   flex: 1, minWidth: mob ? 100 : 120, padding: "12px 14px", cursor: "pointer",
                   fontFamily: FONT, fontSize: mob ? F.xs : F.sm,
-                  background: importStatus === "done" ? "rgba(74,222,128,0.15)" : "rgba(30,41,59,0.3)",
-                  border: importStatus === "done" ? `1px solid ${C.green}` : `1px solid ${C.bgInput}`,
-                  color: importStatus === "done" ? C.green : C.textMuted,
-                }}>{importStatus === "loading" ? "LOADING..." : importStatus === "done" ? "IMPORTED ✓" : "📥 IMPORT"}</button>
+                  background: imp.bg, border: `1px solid ${imp.border}`, color: imp.color,
+                }}>{imp.label || "📥 IMPORT"}</button>
+                  </>);
+                })()}
                 </>)}
                 {!deleteConfirm ? (
                   <button onClick={() => setDeleteConfirm(true)} style={{
