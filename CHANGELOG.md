@@ -4,6 +4,25 @@ All notable updates to Jumpers for Goalposts, written for players.
 
 ---
 
+## 11 March 2026
+
+### Improvements
+
+- **Training rebalanced**: Non-focus training now grows stats at roughly double the old rate (0.22x vs 0.12x), so players develop more naturally across all attributes instead of just the one they're training. High-stat diminishing returns softened slightly for levels 15-19.
+- **Veteran training buffed**: Players aged 32-34 now train at 50% speed (up from 40%). Still slow, but veterans aren't completely frozen anymore.
+- **World XI training reworked**: Training in the World XI Invitational now runs at 15% speed instead of being fully disabled. Still brutally slow, but your players can inch forward.
+
+### Bug Fixes
+
+- **Assistant Manager email timing**: The Asst. Manager training onboarding email no longer arrives before you've played your first match. Also fixed the inbox button using the wrong colour.
+- **Save export/import fixed**: Export and import now use the correct profile-scoped storage key, so saves belong to the right profile slot.
+
+### Under the Hood
+
+- Extracted remaining match engine magic numbers into named constants for easier balance tuning
+
+---
+
 ## 8 March 2026 — The Big Tidy-Up
 
 ### New Features
