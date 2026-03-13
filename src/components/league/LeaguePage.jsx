@@ -676,11 +676,11 @@ export function LeaguePage({ league, leagueResults, matchweekIndex, teamName, pl
                     display: "grid", gridTemplateColumns: tableCols,
                     padding: mob ? "13px 10px" : "10px 10px", fontSize: F.sm, gap: 4,
                     borderBottom: `1px solid ${C.bgCard}`,
-                    borderLeft: inPromoZone ? `3px solid ${C.gold}` : inRelegZone ? `3px solid ${C.red}` : "3px solid transparent",
-                    background: row.isPlayer ? "rgba(74,222,128,0.06)" : inPromoZone ? "rgba(250,204,21,0.03)" : inRelegZone ? "rgba(239,68,68,0.03)" : "transparent",
+                    borderLeft: row.isPlayer ? `3px solid ${C.green}` : inPromoZone ? `3px solid ${C.gold}` : inRelegZone ? `3px solid ${C.red}` : "3px solid transparent",
+                    background: row.isPlayer ? "rgba(74,222,128,0.10)" : inPromoZone ? "rgba(250,204,21,0.03)" : inRelegZone ? "rgba(239,68,68,0.03)" : "transparent",
                     alignItems: "center",
                   }}>
-                    <span style={{ color: inPromoZone ? C.gold : inRelegZone ? C.red : C.textDim, fontSize: F.md }}>{pos + 1}</span>
+                    <span style={{ color: row.isPlayer ? C.green : inPromoZone ? C.gold : inRelegZone ? C.red : C.textDim, fontSize: F.md }}>{pos + 1}</span>
                     <span
                       onClick={() => {
                         if (row.teamIndex == null) return;
@@ -782,19 +782,19 @@ export function LeaguePage({ league, leagueResults, matchweekIndex, teamName, pl
                     </span>
                     {mob ? (
                       <>
-                        <span style={{ textAlign: "center", color: C.textMuted }}>{row.matchesPlayed}</span>
+                        <span style={{ textAlign: "center", color: row.isPlayer ? C.green : C.textMuted }}>{row.matchesPlayed}</span>
                         <span style={{ textAlign: "center", color: gd > 0 ? C.green : gd < 0 ? C.red : C.textMuted }}>{gd > 0 ? `+${gd}` : gd}</span>
-                        <span style={{ textAlign: "center", color: C.text, fontWeight: "bold", fontSize: F.md }}>{row.points}</span>
+                        <span style={{ textAlign: "center", color: row.isPlayer ? C.green : C.text, fontWeight: "bold", fontSize: F.md }}>{row.points}</span>
                       </>
                     ) : (
                       <>
-                        <span style={{ textAlign: "center", color: C.textMuted }}>{row.matchesPlayed}</span>
-                        <span style={{ textAlign: "center", color: C.textMuted }}>{row.won}</span>
-                        <span style={{ textAlign: "center", color: C.textMuted }}>{row.drawn}</span>
-                        <span style={{ textAlign: "center", color: C.textMuted }}>{row.lost}</span>
-                        <span style={{ textAlign: "center", color: C.textMuted }}>{row.gf}</span>
+                        <span style={{ textAlign: "center", color: row.isPlayer ? C.green : C.textMuted }}>{row.matchesPlayed}</span>
+                        <span style={{ textAlign: "center", color: row.isPlayer ? C.green : C.textMuted }}>{row.won}</span>
+                        <span style={{ textAlign: "center", color: row.isPlayer ? C.green : C.textMuted }}>{row.drawn}</span>
+                        <span style={{ textAlign: "center", color: row.isPlayer ? C.green : C.textMuted }}>{row.lost}</span>
+                        <span style={{ textAlign: "center", color: row.isPlayer ? C.green : C.textMuted }}>{row.gf}</span>
                         <span style={{ textAlign: "center", color: gd > 0 ? C.green : gd < 0 ? C.red : C.textMuted }}>{gd > 0 ? `+${gd}` : gd}</span>
-                        <span style={{ textAlign: "center", color: C.text, fontWeight: "bold", fontSize: F.md }}>{row.points}</span>
+                        <span style={{ textAlign: "center", color: row.isPlayer ? C.green : C.text, fontWeight: "bold", fontSize: F.md }}>{row.points}</span>
                       </>
                     )}
                   </div>
