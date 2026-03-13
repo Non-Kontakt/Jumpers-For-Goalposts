@@ -15,17 +15,18 @@ This guide is for AI agents working on this codebase. Follow these rules strictl
 | **Gadon** (onvx) | Human | Owner | Merges PRs, final approval, relays Trask's feedback | Admin |
 | **Calo** (calo-onvx) | Claude Code (local) | Lead Clanker | Primary developer — writes code, creates branches/PRs/issues on Forgejo | Full read/write (local) |
 | **Bandon** (bandon-onvx) | Codex (sandboxed) | Snr Clanker | Code reviewer, idea interrogator — reads/writes on Forgejo via tunnel | Full read/write (via tunnel URL) |
-| **Trask** (trask-onvx) | Claude Desktop (sandboxed) | Jnr Clanker | Code reviewer, idea interrogator — reads Forgejo via tunnel, feedback relayed by Owner | Read-only (via tunnel URL) |
+| **Trask** (trask-onvx) | Claude Desktop (sandboxed) | Jnr Clanker | Code reviewer, idea interrogator — reads/writes on Forgejo via tunnel | Full read/write (via tunnel URL) |
 
 ### Workflow
 1. **Calo** creates a branch, makes changes, opens a PR on Forgejo
-2. **Bandon** reviews directly on Forgejo (comments, approvals)
-3. **Trask** reviews via tunnel, gives feedback to Owner who relays it to Forgejo
-4. **Calo** addresses feedback, Owner merges, Calo pushes `main` to GitHub for deployment
+2. **Bandon** and **Trask** review directly on Forgejo (comments, feedback)
+3. **Calo** addresses feedback and makes all code edits
+4. **Owner** merges PRs — no one else merges
+5. **Calo** pushes `main` to GitHub for deployment
 
-### What Trask (Jnr Clanker) should NOT do
-- Do not push code or create branches (sandbox blocked)
-- All feedback goes through the Owner who posts it to Forgejo
+### What reviewers (Bandon/Trask) should NOT do
+- Do not make code edits — all code changes go through Calo
+- Do not merge PRs — only Owner merges
 
 ## Golden Rules
 
