@@ -1319,6 +1319,7 @@ function FootballManager() {
     setLeague, setLeagueTier, setCup, setAllLeagueStates, setSeasonCalendar,
     setCalendarIndex, setCalendarResults, setLeagueResults,
     setMatchPending, setSummerPhase, setSummerData, setMatchResult, setCupMatchResult,
+    setFiveASideSquad,
   });
 
   // Init league once team name is set (only if not loaded from save)
@@ -9792,6 +9793,8 @@ function FootballManager() {
 
                 return h;
               });
+            } // end seasonNumber < 10 archiving
+            { // New season init — always runs
               setLeagueTier(newTier);
               setSeasonNumber(prev => prev + 1);
               // Reset season-specific arc tracking
