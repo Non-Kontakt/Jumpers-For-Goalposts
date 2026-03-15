@@ -235,7 +235,7 @@ export function MatchResultScreen({ result, league, onDone, initialSpeed, onSpee
 
           {/* Score */}
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 18, marginBottom: 7 }}>
-            <div style={{ textAlign: "right", flex: 1 }}>
+            <div style={{ textAlign: "right", flex: 1, minWidth: 0 }}>
               <div
                 onClick={() => {
                   if (homeTeam.isPlayer || !homeTeam.squad) return;
@@ -251,6 +251,7 @@ export function MatchResultScreen({ result, league, onDone, initialSpeed, onSpee
                   textDecoration: !homeTeam.isPlayer && homeTeam.squad ? "underline" : "none",
                   textDecorationColor: homeTeam.color || C.slate,
                   textDecorationStyle: "dotted",
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                 }}
               >{homeTeam.name}</div>
               {homeTeam.trait && TEAM_TRAITS[homeTeam.trait] && (
@@ -265,7 +266,7 @@ export function MatchResultScreen({ result, league, onDone, initialSpeed, onSpee
             }}>
               {currentHomeGoals} - {currentAwayGoals}
             </div>
-            <div style={{ textAlign: "left", flex: 1 }}>
+            <div style={{ textAlign: "left", flex: 1, minWidth: 0 }}>
               <div
                 onClick={() => {
                   if (awayTeam.isPlayer || !awayTeam.squad) return;
@@ -281,6 +282,7 @@ export function MatchResultScreen({ result, league, onDone, initialSpeed, onSpee
                   textDecoration: !awayTeam.isPlayer && awayTeam.squad ? "underline" : "none",
                   textDecorationColor: awayTeam.color || C.slate,
                   textDecorationStyle: "dotted",
+                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                 }}
               >{awayTeam.name}</div>
               {awayTeam.trait && TEAM_TRAITS[awayTeam.trait] && (
