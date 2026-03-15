@@ -14,7 +14,7 @@ const hexToRgb = (hex) => {
   return `${r},${g},${b}`;
 };
 
-export function AchievementCabinet({ unlocked, achievementUnlockWeeks = {}, calendarIndex = 0, squad, clubHistory, currentTier, ovrCap = 20,
+export function AchievementCabinet({ unlocked, achievementUnlockWeeks = {}, calendarIndex = 0, seasonNumber = 1, seasonLength = 48, squad, clubHistory, currentTier, ovrCap = 20,
   tickets, retiringPlayers, transferFocus, doubleTrainingWeek,
   twelfthManActive, youthCoupActive, pendingFreeAgent, shortlist, scoutedPlayers, testimonialPlayer,
   rewindableMatches,
@@ -69,7 +69,12 @@ export function AchievementCabinet({ unlocked, achievementUnlockWeeks = {}, cale
     { label: "Secrets", icon: "🎭", ids: new Set(["mixed_up","enzo_drive","nomin_determ","who_shot_rr","joga_bonito","bayda","old_pace","giant_killing","impossible_job","deja_vu","hand_of_god","salt_wounds","six_seven","its_a_sign","absolute_barclays","forgot_kit","soundtrack","gone_up_one_track","ice_bath_track","training_montage","odds_are_even","the_specialist","binary","impatient"]) },
   ];
 
-  const isRecent = (id) => achievementUnlockWeeks[id] != null && calendarIndex - achievementUnlockWeeks[id] <= 2;
+  const absNow = (seasonNumber - 1) * seasonLength + calendarIndex;
+  const isRecent = (id) => {
+    const u = achievementUnlockWeeks[id];
+    if (!u || typeof u === "number") return false; // migration: old format (bare number) treated as not recent
+    return absNow - ((u.season - 1) * seasonLength + u.week) <= 2;
+  };
   const recentIds = new Set(ACHIEVEMENTS.filter(a => unlocked.has(a.id) && isRecent(a.id)).map(a => a.id));
   const hasRecent = recentIds.size > 0;
 

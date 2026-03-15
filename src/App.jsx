@@ -276,16 +276,16 @@ function FootballManager() {
   const [clubKey, setClubKey] = useState(0);
   const [cabinetKey, setCabinetKey] = useState(0);
   const calendarIndex = useGameStore(s => s.calendarIndex);
-  // Track when achievements were unlocked (by calendar week) for "Recent" filter
+  // Track when achievements were unlocked for "Recent" filter (season + week for cross-season math)
   useEffect(() => {
     const prev = achievementUnlockWeeksRef.current;
     const updated = { ...prev };
     let changed = false;
     for (const id of unlockedAchievements) {
-      if (!(id in updated)) { updated[id] = calendarIndex; changed = true; }
+      if (!(id in updated)) { updated[id] = { season: seasonNumber, week: calendarIndex }; changed = true; }
     }
     if (changed) { achievementUnlockWeeksRef.current = updated; setAchievementUnlockWeeks(updated); }
-  }, [unlockedAchievements, calendarIndex]);
+  }, [unlockedAchievements, calendarIndex, seasonNumber]);
   const seasonCalendar = useGameStore(s => s.seasonCalendar);
   const matchweekIndex = useGameStore(s => s.matchweekIndex);
   const [calendarResults, setCalendarResults] = useState({}); // { [calendarIdx]: { playerGoals, oppGoals, won, draw } }
@@ -4449,14 +4449,14 @@ function FootballManager() {
             {cup && <button onClick={() => { if (showCup) setCupKey(k => k + 1); clearAll(); setShowCup(true); }} style={navBtn(showCup, cup.playerEliminated ? C.slate : C.gold)}>🏆 CUP{cup.playerEliminated ? " (OUT)" : ""}</button>}
             <button onClick={() => { if (showTransfers) setTransfersKey(k => k + 1); clearAll(); setShowTransfers(true); }} style={navBtn(showTransfers, C.green)}>🤝 TRANSFERS</button>
             <button onClick={() => { if (showLegends) setClubKey(k => k + 1); clearAll(); setShowLegends(true); }} style={navBtn(showLegends, C.purple)}>📜 CLUB</button>
-            <button onClick={() => { if (showAchievements) setCabinetKey(k => k + 1); clearAll(); setShowAchievements(true); }} style={navBtn(showAchievements, C.gold)}>🏅 CABINET{!showAchievements && [...unlockedAchievements].some(id => achievementUnlockWeeks[id] != null && calendarIndex - achievementUnlockWeeks[id] <= 2) ? <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: C.gold, marginLeft: 6, verticalAlign: "middle", boxShadow: "0 0 6px rgba(250,204,21,0.6)" }} /> : null}</button>
+            <button onClick={() => { if (showAchievements) setCabinetKey(k => k + 1); clearAll(); setShowAchievements(true); }} style={navBtn(showAchievements, C.gold)}>🏅 CABINET{!showAchievements && (() => { const sLen = seasonCalendar?.length || 48; const now = (seasonNumber - 1) * sLen + calendarIndex; return [...unlockedAchievements].some(id => { const u = achievementUnlockWeeks[id]; if (!u || typeof u === "number") return false; return now - ((u.season - 1) * sLen + u.week) <= 2; }); })() ? <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: C.gold, marginLeft: 6, verticalAlign: "middle", boxShadow: "0 0 6px rgba(250,204,21,0.6)" }} /> : null}</button>
           </div>
         );
       })()}
 
       {/* Page content */}
       {showAchievements ? (
-        <AchievementCabinet key={cabinetKey} unlocked={unlockedAchievements} achievementUnlockWeeks={achievementUnlockWeeks} calendarIndex={calendarIndex} squad={squad} clubHistory={clubHistory} currentTier={leagueTier} ovrCap={ovrCap} gameMode={gameMode} isTainted={isTainted}
+        <AchievementCabinet key={cabinetKey} unlocked={unlockedAchievements} achievementUnlockWeeks={achievementUnlockWeeks} calendarIndex={calendarIndex} seasonNumber={seasonNumber} seasonLength={seasonCalendar?.length || 48} squad={squad} clubHistory={clubHistory} currentTier={leagueTier} ovrCap={ovrCap} gameMode={gameMode} isTainted={isTainted}
           tickets={tickets} retiringPlayers={retiringPlayers} transferFocus={transferFocus}
           doubleTrainingWeek={doubleTrainingWeek} twelfthManActive={twelfthManActive}
           youthCoupActive={youthCoupActive} pendingFreeAgent={pendingFreeAgent}
